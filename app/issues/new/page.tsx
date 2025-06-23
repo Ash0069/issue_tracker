@@ -1,6 +1,7 @@
 'use client';
 import { TextField, Button } from '@radix-ui/themes';
 import SimpleMDE from "react-simplemde-editor";
+import { useForm } from "react-hook-form";
 import "easymde/dist/easymde.min.css";
 
 const NewIssuePage = () => {
