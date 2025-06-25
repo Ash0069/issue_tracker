@@ -1,18 +1,41 @@
 'use client';
+
 import { TextField, Button } from '@radix-ui/themes';
-import SimpleMDE from "react-simplemde-editor";
-import { useForm } from "react-hook-form";
+import dynamic from 'next/dynamic';
+import { useForm, Controller } from "react-hook-form";
+import axios from 'axios';
 import "easymde/dist/easymde.min.css";
+import { useRouter } from 'next/navigation';
+
+// Dynamically import SimpleMDE to disable SSR
+const SimpleMDE = dynamic(() => import('react-simplemde-editor'), { ssr: false });
+interface IssueForm {
+  title : string;
+  description : string;
+};
 
 const NewIssuePage = () => {
+  const router = useRouter();
+  const {register, control, handleSubmit} = useForm<IssueForm>();
+
   return (
-    <div className='max-w-xl space-y-3'>
-        <TextField.Root placeholder="Title">
-            
+    <form 
+      className='max-w-xl space-y-3' 
+      onSubmit={handleSubmit(async (data) => {
+        await axios.post('/api/issues', data);
+        router.push('/issues')
+      })}>
+        <TextField.Root placeholder="Title" {...register('title')}>
         </TextField.Root>
-        <SimpleMDE placeholder="Description" />
+        <Controller
+          name = 'description'
+          control = {control}
+          render={({ field }) => 
+            <SimpleMDE placeholder="Description" {...field} />
+          } 
+        />
         <Button>Submit New Issue</Button>
-    </div>
+    </form>
   )
 };
 
